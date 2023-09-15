@@ -28,14 +28,14 @@ int main() {
 	
 	for(int i = 0; i<2; ++i) {
 		bzero(receivemessage, 50);
-		recvfrom(sock_id, receivemessage, sizeof(receivemessage), 0, (struct sockaddr*)&serv, &clientlen);
+		recvfrom(sock_id, receivemessage, sizeof(receivemessage), 0, (struct sockaddr*)&cli, &clientlen);
 		numbers[i] = atoi(receivemessage);
 		}
 	int multiplied = numbers[0]*numbers[1]; 
 	
 	sprintf(sendmessage, "%d", multiplied); 
 
-	sendto(sock_id, sendmessage, strlen(sendmessage), 0, (struct sockaddr*)&serv, clientlen); 
+	sendto(sock_id, sendmessage, strlen(sendmessage), 0, (struct sockaddr*)&cli, clientlen); 
 
 	close(sock_id); 
 	shutdown(sock_id, SHUT_RDWR); 

@@ -1,0 +1,13 @@
+HTTP SERVER RESPONSE: 
+
+HTTP/1.1 200 OK
+Date: Fri, 16 Mar 2018 17:36:27 GMT 
+Server: *Your Server Name*
+Content-Type: text/html; charset = UTF-8
+Content-Length: 1846
+
+<?xml ...>
+<!DOCTYPE html> 
+<html ...>
+... 
+</html>

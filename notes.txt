@@ -1,0 +1,65 @@
+Server Concurrency 
+For servicing multiple clients there are two main approaches
+-> Forking wirht fork()
+-> Selecting with select()
+
+The fork() approach creates a new process to handle each incoming client connection 
+-> Inefficient (High overhead)
+
+==> select() is considered as a better option to handle all incoming clients 
+
+1. I/O Multiplexing 
+    -- A server that handles both TCP and UDP 
+    -- A generic TCP client (like telnet) needs to be able to handle unexpected situations 
+    -- Input from standard input should be sent to a TCP socket
+    -- Input from a TCP socket should be sent to standard output
+    
+    == Non determinism and concurrency problem
+        -- How do we know when to check input from each source
+        -- I/O multiplexing used for such cases
+        -- Client handling multiple sockets at the same time
+        -- If a server handles TCP and UDP both, I/O multiplexing is usually used
+        -- The select() system call provides a way for a single server to wait until a set of network connections has data available for reading 
+        
+        Prototype of select() function -> 
+            int select(int maxfd, fd_set *readset, fd_set *write_set, fd_set *exceptset, const struct timeval *timeout);
+
+            maxfd: highest number assigned to a descriptor
+            readset: set of descriptors we want to read from 
+            writeset: set of descriptors we want to write to 
+            excepset: set of descriptors to watch for exceptions/errors
+            timeout: max time select should wait
+
+            select() will return if "any" of the descriptors in readset and writeset of file descriptors are ready for reading or writing, respectively, or, if any of the descriptors in exceptset are in an error condition. 
+
+            FD_SET( int fd, fd_set *set); add the file descriptor into the set
+            FD_ISSET(int fd, fd_set *set); true if fd is present in the set
+
+            if a client closes a socket whose fd is in one of your watched sets, select() will return, and your next recv() will return 0, indicating the socket has been closed. 
+
+            Setting the timeval in select() 
+
+            setting the timeout to 0, select() times out immediately (same as the blocking I/O); 
+
+            setting the timeout to 0, select() will never time out until an fd is modified
+
+            struct timeval {
+                long tv_sec; /*seconds*/
+                long tv_usec; /*microseconds*/
+            }
+            struct timeval max = {1, 0};
+
+            using select() 
+            create fd_set()
+            clear the whole set with fd_zero
+            add each descriptor you want ot watch using fd_set
+            when select returns use fd_isset to see if i/o is possible on each fd
+
+            operations to use with fd_set:
+                void fd_zero(fd_set *fdset)
+                void fd_set(int fd, fd_set *fdset); 
+                void fd_clr(int fd, fd_set *fdset);
+                int fd_isset(int fd, fd_set *fdset);
+
+                
+

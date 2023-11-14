@@ -1,0 +1,99 @@
+Socket Options are important as they are defined to handle the sockets 
+In addition to binding a socket to a local address or connecting it to a destination address,
+application programs need to control the sockets as well. 
+
+Following are some of the socket options: 
+
+1.getsockopt, setsockopt
+
+Following is a question they have asked directly
+int getsockopt(int sockfd, int level, int optname, void *optval, socklent_t *optlen); 
+int setsockopt(int sockfd, int level, int optname, void *optval, socklent_t optlen); //notice optlen 
+sockfd => socket descriptor
+level => code in the system to interpret the option (generic, ipv4, ipv6, TCP); 
+optval => pointer to a variable from which the new value of the option is fetched by setsockopt, 
+	or into which the current value of the option is stored by getsockopt
+optlen => the size of the option variable 
+
+There are to basic types of options: 
+	-Binary options enable or disable a certain feature
+	-Options that fetch and return specific values that we can either set or examine 
+
+some socket options have timing considerations about when to set or fetch the option versus the
+state of the socket 
+
+Following are some generic socket options: 
+	1. SO_BROADCAST 
+		-enable or disabel the ability of the process to send broadcast messages. 
+		-you cannot broadcast on TCP or SCTP 
+	2. SO_DEBUG
+		-only supported by TCP
+		-when enabled for a tcp socket, the kernel keeps track of detailed info about all 
+		 all the packets sent or received by TCP for the socket 
+	3. SO_DONTROUTE
+		-Outgoing packets are to bypass the normal routing mechanisms
+		-bypass the routing table and force a packet to be sent out a particular interface
+	4. SO_ERROR
+		-Process can obtain the value of SO_ERROR by fetching the SO_ERROR socket option 
+	5. SO_KEEPALIVE
+		-when the keep alive option is set it stays alive until theres a response
+		-Peer Response 
+			-ACK (EVERYTHING OK)
+			-RST: Tells the TCP that the peer host has crashed
+			-after 11 minutes and 15 seconds the socket closes
+	6. SO_LINGER 
+		-Specify how the close function operates for a connection oriented protocol. 
+		-l_onoff = TCP aborts the connection when it is closed
+		-l_linger = value in seconds 
+	7. SO_RCVBUFF, SO_SNDBUFF 
+		-The receive buffers are used by TCP, UDP, and SCTP to hold received data until it is read by the application. 
+		-With TCP, the available room in the socket receive buffer limits the window that TCP can advertise to the other end. 
+		- Default
+			- Default TCP send and receive buffer size: 4096 (older), {8192, 61440} (newer)
+			- Default UDP buffer size: 9000 bytes, 40000 bytes
+		-SO_RCVBUFF option must be set before the conneciton is established
+		-TCP socket buffer size should be atleast three times the MSS (Max segment size)
+		-MSS is typically 1460 bytes but it can vary network to network
+	8. SO_RCVLOWAT, SO_SNDLOWAT (low water mark is the level at which the kernel will notify the application that there is data available to read or that the send buffer is empty)
+		-Every sokcet has a receive low-water mark and send-low water mark
+		-The amount of data that must be in the socket receive buffer for select to return readable
+		-default send low water mark: 2048 for TCP
+	9. SO_RCVTIMEO, SO_SNDTIMEO 
+		-Allow us to place a timeout on socket receives and sends
+		-Specify the timeouts in sends and microseconds
+		-Both timeouts are disabled by default 
+	10. SO_REUSEADDR, SO_REUSEPORT
+		- Allow a listening server to start and bind its well known port even if previously established connection exist here. 
+		- Allow multiple instance of the same server to be started on the same port, as long as each instance binds a different local IP
+		- Allow a single process to bind the same port to multiple sockets, as long as each bind specifies a different local IP. 
+		- Allow completely duplicate bindings: multicasting
+	11. SO_TYPE
+		-This option returns the socket type
+		-The integer value returned is a value such as SOCK_STREAM or SOCK_DGRAM
+	12. SO_USELOOPBACK
+		-Applies only to the sockets in the routing domain(AF_ROUTE)
+		-This option defaults to ON for sockets
+		-The socket receives a copy of everything sent on the socket
+
+	Following are the IPV4 Socket options:- 
+		- These socket options are processed by IPv4 and have a level of IPPROTO_IP
+(ipheaderinclude)	1. IP_HDRINCL => If this option is set for a raw IP socket, we must build our IP header for all the datagrams that we send on the raw socket
+					-Normally, the kernel builds the IP header for datagrams but there exists some applications which override default kernel values
+					2. IP_OPTIONS => Allow us to set the IP options int the IPv4 header
+					3. IP_RECVDSTADDR=> (ipreceivedestinationaddress) This option causes the destination ip address of a received udp datagram to be retuned 
+					4. IP_RECVIF => whether or not return the interface index which is a unique identifier of a logical or physical interface in a network device.
+					5. IP_TOS => set the type of service field in IP header for a TCP, UDP or SCTP socket. 
+					6. IP_TTL=> set and fetch the ttl or time to live the default value is 64 for BSD or Berkley Software Distribution
+	
+	Following are the TCP socket option 
+		- There are 4 TCP socket options
+			1.TCP_KEEPALIVE => When the TCP_KEEPALIVE socket option is enabled, the system will send keep-alive packets to the peer at regular intervals. If the system does not receive a response to a keep-alive within a certain period of time, the system will assume the connection is broken
+			2.TCP_MAXRT (max retransmission time) => Controls the maximum amount of time after which a TCP connection will retransmit a packet before closing the connection (0: use default) -1 for retransmit forever and positive value: rounded up to next transmission time 
+			3.TCP_MAXSEG =>Returns the max segment size for a TCP connection
+			4.TCP_NODELAY => Disables TCP's Nagle algorithm 
+				**Nagle Algorithm-> 
+					-- TCP Algorithm that reduces the number of small packets sent over a network. 
+					-- Can be delayed by using the TCP_NODELAY
+					-- Buffer the outgoing data until a certain amount of data has been accumulated or a certain amount of time has elasped
+					-- for example 1B (send it) 1B to send? wait for the acknowledgment, get the acknowledgement? send all the accumulated data which was stored in a buffer to the receiver
+			5.

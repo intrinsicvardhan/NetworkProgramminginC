@@ -37,7 +37,7 @@ int main() {
     bind(sock_fd, (struct sockaddr*)&serv, sizeof(serv));
 
 
-    mreq.imr_multiaddr.s_addr = inet_addr("224.1.1.5"); //creating nthe multitasking group
+    mreq.imr_multiaddr.s_addr = inet_addr("224.1.1.5"); //creating nthe multicasting group
     mreq.imr_interface.s_addr = INADDR_ANY;
     setsockopt(sock_fd, IPPROTO_IP, IP_ADD_MEMBERSHIP, &mreq, sizeof(mreq));
     

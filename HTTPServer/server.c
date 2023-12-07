@@ -64,10 +64,9 @@ int main() {
                                                             "<h1>Hello THERE</h1>%s</body></HTML>", time_string);
 
         write(comm_fd, server_response, strlen(server_response));
-            close(comm_fd);
-    close(server_fd);
-
+        close(comm_fd);
     }
+    close(server_fd);
 
 
     return 0;

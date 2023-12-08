@@ -18,7 +18,7 @@ int main() {
 
     serv.sin_family = AF_INET;
     serv.sin_port = htons(12345);
-    serv.sin_addr.s_addr = inet_addr("255.255.255.255");
+    serv.sin_addr.s_addr = inet_addr("255.255.255.255"); //any message sent on this is broadcasted to each port
     
     while(1) {
         bzero(str2, sizeof(str2));

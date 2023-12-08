@@ -14,7 +14,6 @@ int main() {
     int server_fd, comm_fd;
     struct sockaddr_in serv;
     char server_response[1000];  // Use an array to store the response
-    char time_string[100];
 
     serv.sin_family = AF_INET;
     serv.sin_addr.s_addr = INADDR_ANY;
@@ -56,18 +55,21 @@ int main() {
         time(&raw_time);
         time_info = localtime(&raw_time);
 
-        strftime(time_string, sizeof(time_string), "Current Time: %d-%m-%Y %H:%M:%S\n", time_info);
+        // strftime(time_string, sizeof(time_string), "Current Time: %d-%m-%Y %H:%M:%S\n", time_info);
+
+        char* time_string = asctime(time_info);
 
         // Use snprintf to safely format the response
-        snprintf(server_response, sizeof(server_response), "HTTP/1.1 200 OK\nContent-Type:text/html\n\n"
-                                                            "<!DOCTYPE HTML><HTML><body>"
-                                                            "<h1>Hello THERE</h1>%s</body></HTML>", time_string);
+       snprintf(server_response, sizeof(server_response), "HTTP/1.1 200 OK\nContent-Type:text/html\n\n"
+                                                    "<!DOCTYPE HTML><HTML><body>"
+                                                    "<h1>Hello THERE</h1>%s</body>"
+                                                    "<script>setTimeout(function() { location.reload(); }, 5000);</script>"
+                                                    "</HTML>", time_string);
 
         write(comm_fd, server_response, strlen(server_response));
         close(comm_fd);
     }
     close(server_fd);
-
 
     return 0;
 }

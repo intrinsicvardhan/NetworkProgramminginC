@@ -26,7 +26,6 @@ int main() {
         bzero(rcvmssg, 50);
         recvfrom(sock_fd, rcvmssg, 100, 0, NULL, NULL);
         printf("received mssg: %s\n", rcvmssg);
-
     }
 
     close(sock_fd); 
